@@ -9,6 +9,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 
+# 從 datasets.py 中把register function拿來用
 from datasets import register
 
 
@@ -21,6 +22,8 @@ class ImageFolder(Dataset):
         self.cache = cache
 
         if split_file is None:
+            # os.listdir => 返回指令路徑下的檔案名稱
+            # filenames = ['0001.png', '0002.png',......]
             filenames = sorted(os.listdir(root_path))
         else:
             with open(split_file, 'r') as f:
@@ -28,11 +31,13 @@ class ImageFolder(Dataset):
         if first_k is not None:
             filenames = filenames[:first_k]
 
+
         self.files = []
         for filename in filenames:
             file = os.path.join(root_path, filename)
 
             if cache == 'none':
+                #files內存的是img的絕對路徑 (還沒真讀)
                 self.files.append(file)
 
             elif cache == 'bin':
@@ -50,6 +55,7 @@ class ImageFolder(Dataset):
                 self.files.append(bin_file)
 
             elif cache == 'in_memory':
+                # 直接開讀，真實img資料進到file
                 self.files.append(transforms.ToTensor()(
                     Image.open(file).convert('RGB')))
 
@@ -57,9 +63,14 @@ class ImageFolder(Dataset):
         return len(self.files) * self.repeat
 
     def __getitem__(self, idx):
+        # 應該可以針對這個去做修改，maybe random sample degree, 我們把不同scene中相同degree的放在一起
+        # 每次 getitem 就先sample degree, 不同drgree就對應到不同的 file list, 裡面去裝那個degree 的blur img 路徑
+        # 以 cache = none 為例
+        # 這裡取出idx 對應的img 絕對位置
         x = self.files[idx % len(self.files)]
 
         if self.cache == 'none':
+            # 取出真實 img 影像
             return transforms.ToTensor()(Image.open(x).convert('RGB'))
 
         elif self.cache == 'bin':

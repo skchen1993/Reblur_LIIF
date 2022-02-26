@@ -108,12 +108,15 @@ def make_coord(shape, ranges=None, flatten=True):
             v0, v1 = -1, 1
         else:
             v0, v1 = ranges[i]
+        # r = grid center 到 grid 邊界的距離
         r = (v1 - v0) / (2 * n)
+        # seq => -0.9875, -0.9625....從 -1 慢慢走 r 去表示出點的座標
         seq = v0 + r + (2 * r) * torch.arange(n).float()
         coord_seqs.append(seq)
     ret = torch.stack(torch.meshgrid(*coord_seqs), dim=-1)
+    # 根據你給的size(80 x 80) 去生出座標矩陣
     if flatten:
-        ret = ret.view(-1, ret.shape[-1])
+        ret = ret.view(-1, ret.shape[-1]) # flatten後 => (6400, 2)
     return ret
 
 
@@ -122,7 +125,13 @@ def to_pixel_samples(img):
         img: Tensor, (3, H, W)
     """
     coord = make_coord(img.shape[-2:])
+    # coord: 座標矩陣(拉平的 ex:6400 x 2)
+
+    # view(3, -1): 3x80x80 => 3x6400
+    # permute(1, 0): 3x6400 => 6400 x 3
+
     rgb = img.view(3, -1).permute(1, 0)
+    # rgb: 把影像也從2D flatten to 1D : (6400 x 3)
     return coord, rgb
 
 

@@ -40,20 +40,41 @@ from test import eval_psnr
 def make_data_loader(spec, tag=''):
     if spec is None:
         return None
-
+    # spec 就是train_dataset or val_dataset 小dict
+    # 以train_dataset為例，裡面又有其他小dict => dataset, wrapper, batch_size
+    # 這裡用train_dataset dict下的子dict => dataset來做 CustomDataset in pytorch
+    """
+    第一次的make利用了 dataset中的:
+        name = 'image-folder' 指定了要用的class來建立dataset object
+        args中的path去給定路徑吃img, repeat, cache方法之類的
+    """
     dataset = datasets.make(spec['dataset'])
+    # 上面的dataset是 class ImageFolder的object
+
+    # 把上一部件好的CustomDataset object又在丟進,但這次的input是 wrapper, 是不是
     dataset = datasets.make(spec['wrapper'], args={'dataset': dataset})
 
     log('{} dataset: size={}'.format(tag, len(dataset)))
     for k, v in dataset[0].items():
         log('  {}: shape={}'.format(k, tuple(v.shape)))
-
+        # 這裡的 dataset[0] 就對應到 class SRImplicitDownsampled 中的__getitem__() => return 一個dict
+        #'inp': crop_lr, 'coord': hr_coord, 'cell': cell, 'gt': hr_rgb
+        # 可以去看log
+        """
+        train dataset: size=16000
+        inp: shape=(3, 48, 48)
+        coord: shape=(2304, 2)
+        cell: shape=(2304, 2)
+        gt: shape=(2304, 3)
+        """
+    # Dataloader 吃的是 class SRImplicitDownsampled object
     loader = DataLoader(dataset, batch_size=spec['batch_size'],
         shuffle=(tag == 'train'), num_workers=8, pin_memory=True)
     return loader
 
 
 def make_data_loaders():
+    # 'train_dataset'與 'val_dataset' 的內容可以從 yaml檔去看 => args內有root_path (路徑), repeat, cache....
     train_loader = make_data_loader(config.get('train_dataset'), tag='train')
     val_loader = make_data_loader(config.get('val_dataset'), tag='val')
     return train_loader, val_loader
@@ -122,10 +143,12 @@ def train(train_loader, model, optimizer):
 
 def main(config_, save_path):
     global config, log, writer
+    # config is global now
     config = config_
     log, writer = utils.set_save_path(save_path)
     with open(os.path.join(save_path, 'config.yaml'), 'w') as f:
         yaml.dump(config, f, sort_keys=False)
+    # 在save folder裡面把這次操作紀錄存下來
 
     train_loader, val_loader = make_data_loaders()
     if config.get('data_norm') is None:
@@ -208,7 +231,7 @@ def main(config_, save_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config')
+    parser.add_argument('--config', default= "configs/train-div2k/train_edsr-baseline-liif.yaml")
     parser.add_argument('--name', default=None)
     parser.add_argument('--tag', default=None)
     parser.add_argument('--gpu', default='0')
@@ -218,6 +241,7 @@ if __name__ == '__main__':
 
     with open(args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
+        # train_edsr-baseline-liif.yaml
         print('config loaded.')
 
     save_name = args.name
@@ -226,5 +250,7 @@ if __name__ == '__main__':
     if args.tag is not None:
         save_name += '_' + args.tag
     save_path = os.path.join('./save', save_name)
-
+    # save_path = ./save/_train_edsr-baseline-liif
     main(config, save_path)
+    # config 裡面的東西都是以dict的形式儲存, 其中congif這個大dict裡面有9個小dict, 包括
+    # train_dataset, val_dataset, datanorm, ... model, optimizer...

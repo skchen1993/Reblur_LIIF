@@ -77,6 +77,7 @@ class SRImplicitPaired(Dataset):
             'cell': cell,
             'gt': hr_rgb
         }
+        # 會return 一個dict
 
 
 def resize_fn(img, size):
@@ -90,8 +91,8 @@ class SRImplicitDownsampled(Dataset):
 
     def __init__(self, dataset, inp_size=None, scale_min=1, scale_max=None,
                  augment=False, sample_q=None):
-        self.dataset = dataset
-        self.inp_size = inp_size
+        self.dataset = dataset # class ImageFolder object
+        self.inp_size = inp_size # 48
         self.scale_min = scale_min
         if scale_max is None:
             scale_max = scale_min
@@ -100,12 +101,18 @@ class SRImplicitDownsampled(Dataset):
         self.sample_q = sample_q
 
     def __len__(self):
+        # 這裡就會參考到 class ImageFolder的 repeat 去計算出來的 len
         return len(self.dataset)
 
     def __getitem__(self, idx):
+        # dataset[idx] => 就會觸發 class ImageFolder 定義的 __getitem__(), 去取出對應的一張img本人
         img = self.dataset[idx]
-        s = random.uniform(self.scale_min, self.scale_max)
 
+        #s = random.uniform(self.scale_min, self.scale_max)
+        s = 1.6619
+
+        # s = 1.6619..... (random) => 用來決定你的HR 大小
+        # 所以這整個故事中，是LR size固定
         if self.inp_size is None:
             h_lr = math.floor(img.shape[-2] / s + 1e-9)
             w_lr = math.floor(img.shape[-1] / s + 1e-9)
@@ -113,18 +120,20 @@ class SRImplicitDownsampled(Dataset):
             img_down = resize_fn(img, (h_lr, w_lr))
             crop_lr, crop_hr = img_down, img
         else:
-            w_lr = self.inp_size
-            w_hr = round(w_lr * s)
+            # input size = 48 (LR size)
+            w_lr = self.inp_size # 48 (LR size)
+            w_hr = round(w_lr * s) # 80 (HR size)
             x0 = random.randint(0, img.shape[-2] - w_hr)
             y0 = random.randint(0, img.shape[-1] - w_hr)
             crop_hr = img[:, x0: x0 + w_hr, y0: y0 + w_hr]
             crop_lr = resize_fn(crop_hr, w_lr)
+            # resize_fn (wrapper.py裡的func), 用雙線性差值直接把你指定的image downscale到你指定的size (hr -> lr)
 
         if self.augment:
-            hflip = random.random() < 0.5
-            vflip = random.random() < 0.5
-            dflip = random.random() < 0.5
-
+            hflip = random.random() < 0.5 # True
+            vflip = random.random() < 0.5 # False
+            dflip = random.random() < 0.5 # True
+            # augment == Ture => 隨機決定要不要做上面這些augmentation 操作
             def augment(x):
                 if hflip:
                     x = x.flip(-2)
@@ -136,25 +145,28 @@ class SRImplicitDownsampled(Dataset):
 
             crop_lr = augment(crop_lr)
             crop_hr = augment(crop_hr)
-
+        # hr_coord: (6400, 2) (座標矩陣拉平),  hr_rgb: (6400, 3) (真實HR img 拉平)
         hr_coord, hr_rgb = to_pixel_samples(crop_hr.contiguous())
-
+        # ex: sample_q = 2304
         if self.sample_q is not None:
             sample_lst = np.random.choice(
                 len(hr_coord), self.sample_q, replace=False)
             hr_coord = hr_coord[sample_lst]
             hr_rgb = hr_rgb[sample_lst]
+            # hr_coord, hr_rgb 現在都是隨機亂數從3600 pixel corrdinate, vector中取 2304個出來的結果
 
         cell = torch.ones_like(hr_coord)
         cell[:, 0] *= 2 / crop_hr.shape[-2]
         cell[:, 1] *= 2 / crop_hr.shape[-1]
 
         return {
-            'inp': crop_lr,
-            'coord': hr_coord,
+            'inp': crop_lr,     #從 切出來的HR(3x 80 x 80)　直接Downscale 來的 LR img 本人 (3 x 48 x 48)
+            'coord': hr_coord,  #隨機亂數從3600 HR pixel corrdinate 取 2304個出來的座標們(不按順序)
             'cell': cell,
-            'gt': hr_rgb
+            'gt': hr_rgb        #隨機亂數從3600 HR pixel vector 取 2304個出來的座標們(不按順序)
         }
+    # idx 輸入後，取到的東西是一個dict
+
 
 
 @register('sr-implicit-uniform-varied')

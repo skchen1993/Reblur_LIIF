@@ -15,15 +15,19 @@ import utils
 
 def batched_predict(model, inp, coord, cell, bsize):
     with torch.no_grad():
+        #input 丟進去 model裡面給 encoder處理，此時model 這個object裡面的變數 self.feat 就有運算結果 (return 沒用到)
         model.gen_feat(inp)
-        n = coord.shape[1]
+        n = coord.shape[1] #: 360000 (600 x 600)
         ql = 0
         preds = []
         while ql < n:
+            # 1st round: qr = 30000, 每次都會在往後取30000個位置來運算, 有點像是指定要取哪一段進入model運算, 最後的一round, qr = n 剛好取到底
             qr = min(ql + bsize, n)
+            # coord, cell 再丟進來前有先做unsqueeze 所以多了一維 => (1, 360000, 2)
             pred = model.query_rgb(coord[:, ql: qr, :], cell[:, ql: qr, :])
             preds.append(pred)
             ql = qr
+        #沿著第一維度(30000) 做cat => pred變成 (1, 360000, 3)
         pred = torch.cat(preds, dim=1)
     return pred
 
