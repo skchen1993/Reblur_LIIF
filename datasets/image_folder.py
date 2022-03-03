@@ -1,7 +1,7 @@
 import os
 import json
 from PIL import Image
-
+import random
 import pickle
 import imageio
 import numpy as np
@@ -20,20 +20,32 @@ class ImageFolder(Dataset):
                  repeat=1, cache='none'):
         self.repeat = repeat
         self.cache = cache
+        #[REBLUR] 先讓範圍小一點
+        self.deg_list = [3,7,11,15,19]
+        self.scene_path_folder = os.listdir(root_path)
+        self.root_path = root_path
+
+        if self.root_path == "/home/skchen/GOPRO_final/train/":
+            self.gt_num = 24
+
+        if self.root_path == "/home/skchen/GOPRO_final/val/":
+            self.gt_num = 5
+
 
         if split_file is None:
-            # os.listdir => 返回指令路徑下的檔案名稱
-            # filenames = ['0001.png', '0002.png',......]
-            filenames = sorted(os.listdir(root_path))
+            #[REBLUR] 0.png, 1.png, ... 23.png
+            filename_basename = sorted(os.listdir(root_path+ self.scene_path_folder[0] +"/gt/"))
+        """
         else:
             with open(split_file, 'r') as f:
                 filenames = json.load(f)[split_key]
         if first_k is not None:
             filenames = filenames[:first_k]
-
-
-        self.files = []
-        for filename in filenames:
+        """
+        #[REBLUR] 原本是 ../DIV2k/0001.png 這個方便讀取的路徑入self.files, 但因為我們現在要讓他random degree去取，就到後面在處理
+        self.files = filename_basename
+        """
+        for filename in filename_basename:
             file = os.path.join(root_path, filename)
 
             if cache == 'none':
@@ -58,21 +70,57 @@ class ImageFolder(Dataset):
                 # 直接開讀，真實img資料進到file
                 self.files.append(transforms.ToTensor()(
                     Image.open(file).convert('RGB')))
-
+        """
     def __len__(self):
-        return len(self.files) * self.repeat
+
+        # return len(self.files) * self.repeat
+        # [REBLUR] Train 每個scene 24張，共22個scene, 每個scene又有5個degree => 2640
+        # [REBLUR] Val 每個scene 5張，共22個scene, 每個scene又有5個degree => 550
+        return self.gt_num * 22 * 5 * self.repeat
 
     def __getitem__(self, idx):
-        # 應該可以針對這個去做修改，maybe random sample degree, 我們把不同scene中相同degree的放在一起
-        # 每次 getitem 就先sample degree, 不同drgree就對應到不同的 file list, 裡面去裝那個degree 的blur img 路徑
-        # 以 cache = none 為例
-        # 這裡取出idx 對應的img 絕對位置
-        x = self.files[idx % len(self.files)]
+        #[REBLUR] files => gt basename, 這裡先random 兩個 degree
+
+        scene = self.scene_path_folder[random.randint(0, len(self.scene_path_folder)-1)]
+
+        d1 = 0
+        d2 = 0
+        while(d1 == d2):
+            d1 = self.deg_list[random.randint(0, len(self.deg_list)-1)]
+            d2 = self.deg_list[random.randint(0, len(self.deg_list)-1)]
+
+        if d1 > d2:
+            temp = d1
+            d1 = d2
+            d2 = temp
+
+        idx = idx % self.gt_num
+
+        img1_path = self.root_path + scene + "/deg_" + str(d1) + "/" + self.files[idx]
+        img2_path = self.root_path + scene + "/deg_" + str(d2) + "/" + self.files[idx]
+
+        """
+        if self.gt_num == 24 :
+            print("training")
+            print("img1: ", img1_path)
+            print("img2: ", img2_path)
+        if self.gt_num == 5:
+            print("val")
+            print("img1: ", img1_path)
+            print("img2: ", img2_path)
+        """
+
+
+        #x = self.files[idx % len(self.files)]
 
         if self.cache == 'none':
             # 取出真實 img 影像
-            return transforms.ToTensor()(Image.open(x).convert('RGB'))
+            #return transforms.ToTensor()(Image.open(x).convert('RGB'))
+            img1 = transforms.ToTensor()(Image.open(img1_path).convert('RGB'))
+            img2 = transforms.ToTensor()(Image.open(img2_path).convert('RGB'))
+            return img1, img2, d1, d2
 
+        """   
         elif self.cache == 'bin':
             with open(x, 'rb') as f:
                 x = pickle.load(f)
@@ -82,6 +130,7 @@ class ImageFolder(Dataset):
 
         elif self.cache == 'in_memory':
             return x
+        """
 
 
 @register('paired-image-folders')

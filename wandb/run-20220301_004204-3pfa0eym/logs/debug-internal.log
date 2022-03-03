@@ -1,0 +1,47 @@
+2022-03-01 00:42:07,174 INFO    MainThread:30083 [internal.py:wandb_internal():92] W&B internal server running at pid: 30083, started at: 2022-03-01 00:42:07.174057
+2022-03-01 00:42:07,185 INFO    WriterThread:30083 [datastore.py:open_for_write():77] open: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/run-3pfa0eym.wandb
+2022-03-01 00:42:07,191 DEBUG   HandlerThread:30083 [handler.py:handle_request():131] handle_request: check_version
+2022-03-01 00:42:07,196 DEBUG   SenderThread:30083 [sender.py:send():235] send: header
+2022-03-01 00:42:07,197 DEBUG   SenderThread:30083 [sender.py:send_request():249] send_request: check_version
+2022-03-01 00:42:07,817 DEBUG   SenderThread:30083 [sender.py:send():235] send: run
+2022-03-01 00:42:08,118 INFO    SenderThread:30083 [dir_watcher.py:__init__():169] watching files in: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files
+2022-03-01 00:42:08,119 INFO    SenderThread:30083 [sender.py:_start_run_threads():812] run started: 3pfa0eym with start time 1646066525
+2022-03-01 00:42:08,119 DEBUG   SenderThread:30083 [sender.py:send():235] send: summary
+2022-03-01 00:42:08,120 INFO    SenderThread:30083 [sender.py:_save_file():944] saving file wandb-summary.json with policy end
+2022-03-01 00:42:08,121 DEBUG   HandlerThread:30083 [handler.py:handle_request():131] handle_request: run_start
+2022-03-01 00:42:08,130 DEBUG   HandlerThread:30083 [meta.py:__init__():36] meta init
+2022-03-01 00:42:08,131 DEBUG   HandlerThread:30083 [meta.py:__init__():50] meta init done
+2022-03-01 00:42:08,132 DEBUG   HandlerThread:30083 [meta.py:probe():210] probe
+2022-03-01 00:42:08,142 DEBUG   HandlerThread:30083 [meta.py:_setup_git():200] setup git
+2022-03-01 00:42:08,175 DEBUG   HandlerThread:30083 [meta.py:_setup_git():207] setup git done
+2022-03-01 00:42:08,175 DEBUG   HandlerThread:30083 [meta.py:_save_pip():54] save pip
+2022-03-01 00:42:08,177 DEBUG   HandlerThread:30083 [meta.py:_save_pip():68] save pip done
+2022-03-01 00:42:08,177 DEBUG   HandlerThread:30083 [meta.py:_save_conda():75] save conda
+2022-03-01 00:42:08,183 ERROR   HandlerThread:30083 [meta.py:_save_conda():84] Error saving conda packages
+Traceback (most recent call last):
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/wandb/sdk/internal/meta.py", line 81, in _save_conda
+    ["conda", "env", "export"], stdout=f, stderr=subprocess.DEVNULL
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 287, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 729, in __init__
+    restore_signals, start_new_session)
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 1364, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'conda': 'conda'
+2022-03-01 00:42:08,188 DEBUG   HandlerThread:30083 [meta.py:_save_conda():85] save conda done
+2022-03-01 00:42:08,188 DEBUG   HandlerThread:30083 [meta.py:probe():248] probe done
+2022-03-01 00:42:08,208 DEBUG   SenderThread:30083 [sender.py:send():235] send: files
+2022-03-01 00:42:08,208 INFO    SenderThread:30083 [sender.py:_save_file():944] saving file wandb-metadata.json with policy now
+2022-03-01 00:42:08,238 DEBUG   HandlerThread:30083 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:42:08,238 DEBUG   SenderThread:30083 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:42:08,874 INFO    Thread-16 :30083 [upload_job.py:push():137] Uploaded file /tmp/tmp906r9clpwandb/p1ooqmdx-wandb-metadata.json
+2022-03-01 00:42:09,128 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/output.log
+2022-03-01 00:42:09,128 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/requirements.txt
+2022-03-01 00:42:09,129 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/conda-environment.yaml
+2022-03-01 00:42:09,129 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/wandb-summary.json
+2022-03-01 00:42:09,130 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/wandb-metadata.json
+2022-03-01 00:42:11,122 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_modified():230] file/dir modified: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/output.log
+2022-03-01 00:42:15,127 INFO    Thread-13 :30083 [dir_watcher.py:_on_file_modified():230] file/dir modified: /home/skchen/ML_practice/reblur/wandb/run-20220301_004204-3pfa0eym/files/output.log
+2022-03-01 00:42:18,422 WARNING MainThread:30083 [internal.py:wandb_internal():152] Internal process interrupt: 1
+2022-03-01 00:42:23,448 DEBUG   HandlerThread:30083 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:42:23,449 DEBUG   SenderThread:30083 [sender.py:send_request():249] send_request: stop_status

@@ -124,14 +124,15 @@ def to_pixel_samples(img):
     """ Convert the image to coord-RGB pairs.
         img: Tensor, (3, H, W)
     """
+    #[REBLUR] crop_sor(source img切割過後)丟進來 => 48 x 48
     coord = make_coord(img.shape[-2:])
-    # coord: 座標矩陣(拉平的 ex:6400 x 2)
+    # coord: 座標矩陣(拉平的 ex:2304 x 2)
 
-    # view(3, -1): 3x80x80 => 3x6400
-    # permute(1, 0): 3x6400 => 6400 x 3
+    # view(3, -1): 3x 48 x 48 => 3x 2304
+    # permute(1, 0): 3 x 2304 => 2304 x 3
 
     rgb = img.view(3, -1).permute(1, 0)
-    # rgb: 把影像也從2D flatten to 1D : (6400 x 3)
+    # rgb: 把影像也從2D flatten to 1D : (2304 x 3)
     return coord, rgb
 
 

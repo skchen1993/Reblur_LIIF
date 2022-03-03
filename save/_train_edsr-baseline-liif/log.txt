@@ -1,1 +1,12 @@
-train dataset: size=16000
+train dataset: size=15840
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+val dataset: size=1650
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+model: #params=1.6M
+epoch 1/1, train: loss=0.6475, val: psnr=21.3346, 1.6s 1.6s/1.6s

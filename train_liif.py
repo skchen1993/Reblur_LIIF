@@ -1,5 +1,7 @@
-""" Train for generating LIIF, from image to implicit representation.
-
+"""
+sync test 0227
+Train for generating LIIF, from image to implicit representation.
+    sync_test# 0226
     Config:
         train_dataset:
           dataset: $spec; wrapper: $spec; batch_size:
@@ -36,6 +38,8 @@ import models
 import utils
 from test import eval_psnr
 
+import wandb
+
 
 def make_data_loader(spec, tag=''):
     if spec is None:
@@ -61,15 +65,16 @@ def make_data_loader(spec, tag=''):
         #'inp': crop_lr, 'coord': hr_coord, 'cell': cell, 'gt': hr_rgb
         # 可以去看log
         """
-        train dataset: size=16000
-        inp: shape=(3, 48, 48)
-        coord: shape=(2304, 2)
-        cell: shape=(2304, 2)
-        gt: shape=(2304, 3)
+        [DEBLUR]
+            'sor_coord': sor_coord, #(2304 ,2)
+            'crop_sor' : crop_sor,  #(3, 48, 48)
+            'tar_rgb': tar_rgb,     #(2304 ,3)
+            'deg_diff': deg_diff
         """
+
     # Dataloader 吃的是 class SRImplicitDownsampled object
     loader = DataLoader(dataset, batch_size=spec['batch_size'],
-        shuffle=(tag == 'train'), num_workers=8, pin_memory=True)
+        shuffle=(tag == 'train'), num_workers= 16, pin_memory=True)
     return loader
 
 
@@ -95,6 +100,8 @@ def prepare_training():
             lr_scheduler.step()
     else:
         model = models.make(config['model']).cuda()
+        # 一般用法就是這樣，自行建立的 model class 都是繼承於 nn.Module class, 生出的object 會有一繼承來的 functions .parameters()
+        # 再利用.parameters() 可以列舉出model中所有可以優化的參數 => 再丟進要創立optim用的func中
         optimizer = utils.make_optimizer(
             model.parameters(), config['optimizer'])
         epoch_start = 1
@@ -111,26 +118,43 @@ def train(train_loader, model, optimizer):
     model.train()
     loss_fn = nn.L1Loss()
     train_loss = utils.Averager()
-
+    # train_loss = utils.Averager() => class 下的 object
     data_norm = config['data_norm']
-    t = data_norm['inp']
-    inp_sub = torch.FloatTensor(t['sub']).view(1, -1, 1, 1).cuda()
-    inp_div = torch.FloatTensor(t['div']).view(1, -1, 1, 1).cuda()
+    t = data_norm['inp'] # data_norm = {'inp': {'sub': [0.5], 'div': [0.5]}, 'gt': {'sub': [0.5], 'div': [0.5]}}
+    sor_sub = torch.FloatTensor(t['sub']).view(1, -1, 1, 1).cuda() # inp_sub = tensor([[[[0.5000]]]], device='cuda:0')
+    sor_div = torch.FloatTensor(t['div']).view(1, -1, 1, 1).cuda() # inp_div = tensor([[[[0.5000]]]], device='cuda:0')
     t = data_norm['gt']
-    gt_sub = torch.FloatTensor(t['sub']).view(1, 1, -1).cuda()
-    gt_div = torch.FloatTensor(t['div']).view(1, 1, -1).cuda()
+    tar_sub = torch.FloatTensor(t['sub']).view(1, 1, -1).cuda() # gt_sub = tensor([[[[0.5000]]]], device='cuda:0')
+    tar_div = torch.FloatTensor(t['div']).view(1, 1, -1).cuda() # gt_div = tensor([[[[0.5000]]]], device='cuda:0')
 
     for batch in tqdm(train_loader, leave=False, desc='train'):
+        # batch 為從 class SRImplicitDownsampled return 出來的 dict, 透過dataloader去用idx取的
+        """
+        batch:
+            'sor_coord': sor_coord, #(2304 ,2)
+            'crop_sor' : crop_sor,  #(3, 48, 48)
+            'tar_rgb': tar_rgb,     #(2304 ,3)
+            'deg_diff': deg_diff
+        """
+        # 把batch 裡面那一包，都丟進GPU
         for k, v in batch.items():
             batch[k] = v.cuda()
 
-        inp = (batch['inp'] - inp_sub) / inp_div
-        pred = model(inp, batch['coord'], batch['cell'])
+        # 對inp做normalize
+        crop_sor = (batch['crop_sor'] - sor_sub) / sor_div
 
-        gt = (batch['gt'] - gt_sub) / gt_div
+        # 把normalized 的inp + coord + cell 丟進LIIF model
+        # pred: (16, 2304, 3) => coord中2304個隨機座標所對應的預測value
+        pred = model(crop_sor, batch['sor_coord'], batch['deg_diff'])
+
+        # gt 其實也是影像 => 也去做normalize
+        gt = (batch['tar_rgb'] - tar_sub) / tar_div
         loss = loss_fn(pred, gt)
-
+        # 計算這一次的epoch中，每一次minibatch loss的平均
         train_loss.add(loss.item())
+
+        # ~~~~wand~~~~
+        wandb.log({"train_batch_loss": loss.item()})
 
         optimizer.zero_grad()
         loss.backward()
@@ -138,6 +162,8 @@ def train(train_loader, model, optimizer):
 
         pred = None; loss = None
 
+
+    # 這一個epoch 的平均loss => 每一個minibatch的loss總和平均
     return train_loss.item()
 
 
@@ -163,9 +189,9 @@ def main(config_, save_path):
     if n_gpus > 1:
         model = nn.parallel.DataParallel(model)
 
-    epoch_max = config['epoch_max']
-    epoch_val = config.get('epoch_val')
-    epoch_save = config.get('epoch_save')
+    epoch_max = config['epoch_max']        #1000
+    epoch_val = config.get('epoch_val')    #1
+    epoch_save = config.get('epoch_save')  #100
     max_val_v = -1e18
 
     timer = utils.Timer()
@@ -174,6 +200,7 @@ def main(config_, save_path):
         t_epoch_start = timer.t()
         log_info = ['epoch {}/{}'.format(epoch, epoch_max)]
 
+        # 這應該是tensorboardX 的紀錄
         writer.add_scalar('lr', optimizer.param_groups[0]['lr'], epoch)
 
         train_loss = train(train_loader, model, optimizer)
@@ -182,6 +209,8 @@ def main(config_, save_path):
 
         log_info.append('train: loss={:.4f}'.format(train_loss))
         writer.add_scalars('loss', {'train': train_loss}, epoch)
+        # ~~~~wand~~~~
+        wandb.log({"train_epoch_loss": train_loss})
 
         if n_gpus > 1:
             model_ = model.module
@@ -196,12 +225,12 @@ def main(config_, save_path):
             'optimizer': optimizer_spec,
             'epoch': epoch
         }
-
-        torch.save(sv_file, os.path.join(save_path, 'epoch-last.pth'))
+        # save_path: ./save/_train_edsr-baseline-liif/
+        torch.save(sv_file, os.path.join(save_path, 'epoch-last.pth')) #這是存最新的
 
         if (epoch_save is not None) and (epoch % epoch_save == 0):
             torch.save(sv_file,
-                os.path.join(save_path, 'epoch-{}.pth'.format(epoch)))
+                os.path.join(save_path, 'epoch-{}.pth'.format(epoch))) #存每個epoch
 
         if (epoch_val is not None) and (epoch % epoch_val == 0):
             if n_gpus > 1 and (config.get('eval_bsize') is not None):
@@ -210,14 +239,17 @@ def main(config_, save_path):
                 model_ = model
             val_res = eval_psnr(val_loader, model_,
                 data_norm=config['data_norm'],
-                eval_type=config.get('eval_type'),
-                eval_bsize=config.get('eval_bsize'))
+                eval_type=config.get('eval_type'),  #None
+                eval_bsize=config.get('eval_bsize')) #None
 
             log_info.append('val: psnr={:.4f}'.format(val_res))
             writer.add_scalars('psnr', {'val': val_res}, epoch)
+            # ~~~~wand~~~~
+            wandb.log({"val_psnr": val_res})
+
             if val_res > max_val_v:
                 max_val_v = val_res
-                torch.save(sv_file, os.path.join(save_path, 'epoch-best.pth'))
+                torch.save(sv_file, os.path.join(save_path, 'epoch-best.pth')) # val進步時存的
 
         t = timer.t()
         prog = (epoch - epoch_start + 1) / (epoch_max - epoch_start + 1)
@@ -232,12 +264,14 @@ def main(config_, save_path):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default= "configs/train-div2k/train_edsr-baseline-liif.yaml")
-    parser.add_argument('--name', default=None)
+    parser.add_argument('--name', default= "ex1")
     parser.add_argument('--tag', default=None)
     parser.add_argument('--gpu', default='0')
     args = parser.parse_args()
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+
+    wandb.init(name=args.name, project="Reblur_experiment")
 
     with open(args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -254,3 +288,5 @@ if __name__ == '__main__':
     main(config, save_path)
     # config 裡面的東西都是以dict的形式儲存, 其中congif這個大dict裡面有9個小dict, 包括
     # train_dataset, val_dataset, datanorm, ... model, optimizer...
+
+

@@ -1,0 +1,95 @@
+
+./save/ex1 exists, remove? (y/[n]):
+config loaded.
+train dataset: size=15840
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+val dataset: size=2605
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+
+train:   0%|                                           | 0/7920 [00:00<?, ?it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 281, in <module>
+    main(config, save_path)
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 203, in main
+    train_loss = train(train_loader, model, optimizer)
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 159, in train
+    loss.backward()
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/tensor.py", line 185, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph)
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/autograd/__init__.py", line 127, in backward
+    allow_unreachable=True)  # allow_unreachable flag
+KeyboardInterrupt

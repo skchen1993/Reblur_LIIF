@@ -2,8 +2,8 @@ train_dataset:
   dataset:
     name: image-folder
     args:
-      root_path: /home/skchen/IPT_data/DIV2K/DIV2K_train_HR/
-      repeat: 20
+      root_path: /home/skchen/GOPRO_final/train/
+      repeat: 6
       cache: none
   wrapper:
     name: sr-implicit-downsampled
@@ -12,14 +12,14 @@ train_dataset:
       scale_max: 4
       augment: true
       sample_q: 2304
-  batch_size: 16
+  batch_size: 1
 val_dataset:
   dataset:
     name: image-folder
     args:
-      root_path: /home/skchen/IPT_data/DIV2K/DIV2K_valid_HR/
-      first_k: 10
-      repeat: 160
+      root_path: /home/skchen/GOPRO_final/val/
+      first_k: null
+      repeat: 3
       cache: none
   wrapper:
     name: sr-implicit-downsampled
@@ -27,7 +27,7 @@ val_dataset:
       inp_size: 48
       scale_max: 4
       sample_q: 2304
-  batch_size: 16
+  batch_size: 1
 data_norm:
   inp:
     sub:
@@ -59,7 +59,7 @@ optimizer:
   name: adam
   args:
     lr: 0.0001
-epoch_max: 1000
+epoch_max: 1
 multi_step_lr:
   milestones:
   - 200
@@ -68,4 +68,4 @@ multi_step_lr:
   - 800
   gamma: 0.5
 epoch_val: 1
-epoch_save: 100
+epoch_save: 1

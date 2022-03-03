@@ -1,0 +1,86 @@
+
+config loaded.
+./save/ex1 exists, remove? (y/[n]):
+train dataset: size=15840
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+val dataset: size=2605
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 281, in <module>
+    main(config, save_path)
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 239, in main
+    eval_bsize=config.get('eval_bsize'))
+  File "/home/skchen/ML_practice/reblur/test.py", line 69, in eval_psnr
+    inp = (batch['inp'] - inp_sub) / inp_div
+KeyError: 'inp'

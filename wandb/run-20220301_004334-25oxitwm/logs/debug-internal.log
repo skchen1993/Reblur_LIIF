@@ -1,0 +1,75 @@
+2022-03-01 00:43:37,352 INFO    MainThread:31742 [internal.py:wandb_internal():92] W&B internal server running at pid: 31742, started at: 2022-03-01 00:43:37.351697
+2022-03-01 00:43:37,360 INFO    WriterThread:31742 [datastore.py:open_for_write():77] open: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/run-25oxitwm.wandb
+2022-03-01 00:43:37,362 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: check_version
+2022-03-01 00:43:37,371 DEBUG   SenderThread:31742 [sender.py:send():235] send: header
+2022-03-01 00:43:37,372 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: check_version
+2022-03-01 00:43:38,005 DEBUG   SenderThread:31742 [sender.py:send():235] send: run
+2022-03-01 00:43:38,294 INFO    SenderThread:31742 [dir_watcher.py:__init__():169] watching files in: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files
+2022-03-01 00:43:38,295 INFO    SenderThread:31742 [sender.py:_start_run_threads():812] run started: 25oxitwm with start time 1646066615
+2022-03-01 00:43:38,295 DEBUG   SenderThread:31742 [sender.py:send():235] send: summary
+2022-03-01 00:43:38,295 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: run_start
+2022-03-01 00:43:38,297 INFO    SenderThread:31742 [sender.py:_save_file():944] saving file wandb-summary.json with policy end
+2022-03-01 00:43:38,309 DEBUG   HandlerThread:31742 [meta.py:__init__():36] meta init
+2022-03-01 00:43:38,309 DEBUG   HandlerThread:31742 [meta.py:__init__():50] meta init done
+2022-03-01 00:43:38,309 DEBUG   HandlerThread:31742 [meta.py:probe():210] probe
+2022-03-01 00:43:38,319 DEBUG   HandlerThread:31742 [meta.py:_setup_git():200] setup git
+2022-03-01 00:43:38,355 DEBUG   HandlerThread:31742 [meta.py:_setup_git():207] setup git done
+2022-03-01 00:43:38,355 DEBUG   HandlerThread:31742 [meta.py:_save_pip():54] save pip
+2022-03-01 00:43:38,358 DEBUG   HandlerThread:31742 [meta.py:_save_pip():68] save pip done
+2022-03-01 00:43:38,358 DEBUG   HandlerThread:31742 [meta.py:_save_conda():75] save conda
+2022-03-01 00:43:38,367 ERROR   HandlerThread:31742 [meta.py:_save_conda():84] Error saving conda packages
+Traceback (most recent call last):
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/wandb/sdk/internal/meta.py", line 81, in _save_conda
+    ["conda", "env", "export"], stdout=f, stderr=subprocess.DEVNULL
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 287, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 729, in __init__
+    restore_signals, start_new_session)
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/subprocess.py", line 1364, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'conda': 'conda'
+2022-03-01 00:43:38,371 DEBUG   HandlerThread:31742 [meta.py:_save_conda():85] save conda done
+2022-03-01 00:43:38,371 DEBUG   HandlerThread:31742 [meta.py:probe():248] probe done
+2022-03-01 00:43:38,392 DEBUG   SenderThread:31742 [sender.py:send():235] send: files
+2022-03-01 00:43:38,392 INFO    SenderThread:31742 [sender.py:_save_file():944] saving file wandb-metadata.json with policy now
+2022-03-01 00:43:38,419 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:43:38,421 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:43:39,053 INFO    Thread-16 :31742 [upload_job.py:push():137] Uploaded file /tmp/tmpk9drs89twandb/30vzchiz-wandb-metadata.json
+2022-03-01 00:43:39,306 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/requirements.txt
+2022-03-01 00:43:39,306 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/wandb-metadata.json
+2022-03-01 00:43:39,307 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log
+2022-03-01 00:43:39,307 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/conda-environment.yaml
+2022-03-01 00:43:39,308 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_created():217] file/dir created: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/wandb-summary.json
+2022-03-01 00:43:41,298 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_modified():230] file/dir modified: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log
+2022-03-01 00:43:53,637 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:43:53,637 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:43:57,315 INFO    Thread-13 :31742 [dir_watcher.py:_on_file_modified():230] file/dir modified: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log
+2022-03-01 00:44:08,858 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:44:08,859 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:44:12,061 DEBUG   SenderThread:31742 [sender.py:send():235] send: stats
+2022-03-01 00:44:24,078 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:44:24,080 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:44:39,333 DEBUG   HandlerThread:31742 [handler.py:handle_request():131] handle_request: stop_status
+2022-03-01 00:44:39,334 DEBUG   SenderThread:31742 [sender.py:send_request():249] send_request: stop_status
+2022-03-01 00:44:39,717 WARNING MainThread:31742 [internal.py:wandb_internal():152] Internal process interrupt: 1
+2022-03-01 00:44:43,729 WARNING MainThread:31742 [internal.py:wandb_internal():152] Internal process interrupt: 2
+2022-03-01 00:44:43,729 ERROR   MainThread:31742 [internal.py:wandb_internal():155] Internal process interrupted.
+2022-03-01 00:44:44,080 INFO    WriterThread:31742 [datastore.py:close():281] close: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/run-25oxitwm.wandb
+2022-03-01 00:44:44,361 INFO    HandlerThread:31742 [handler.py:finish():739] shutting down handler
+2022-03-01 00:44:44,620 INFO    SenderThread:31742 [sender.py:finish():1075] shutting down sender
+2022-03-01 00:44:44,621 INFO    SenderThread:31742 [dir_watcher.py:finish():283] shutting down directory watcher
+2022-03-01 00:44:45,330 INFO    SenderThread:31742 [dir_watcher.py:_on_file_modified():230] file/dir modified: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log
+2022-03-01 00:44:45,331 INFO    SenderThread:31742 [dir_watcher.py:finish():313] scan: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files
+2022-03-01 00:44:45,331 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log output.log
+2022-03-01 00:44:45,332 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/config.yaml config.yaml
+2022-03-01 00:44:45,333 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/requirements.txt requirements.txt
+2022-03-01 00:44:45,333 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/wandb-metadata.json wandb-metadata.json
+2022-03-01 00:44:45,333 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/conda-environment.yaml conda-environment.yaml
+2022-03-01 00:44:45,334 INFO    SenderThread:31742 [dir_watcher.py:finish():327] scan save: /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/wandb-summary.json wandb-summary.json
+2022-03-01 00:44:45,334 INFO    SenderThread:31742 [file_pusher.py:finish():177] shutting down file pusher
+2022-03-01 00:44:45,335 INFO    SenderThread:31742 [file_pusher.py:join():182] waiting for file pusher
+2022-03-01 00:44:46,044 INFO    Thread-19 :31742 [upload_job.py:push():137] Uploaded file /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/requirements.txt
+2022-03-01 00:44:46,044 INFO    Thread-18 :31742 [upload_job.py:push():137] Uploaded file /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/config.yaml
+2022-03-01 00:44:46,064 INFO    Thread-17 :31742 [upload_job.py:push():137] Uploaded file /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/output.log
+2022-03-01 00:44:46,068 INFO    Thread-20 :31742 [upload_job.py:push():137] Uploaded file /home/skchen/ML_practice/reblur/wandb/run-20220301_004334-25oxitwm/files/wandb-summary.json
+2022-03-01 00:44:47,035 INFO    MainThread:31742 [internal.py:handle_exit():79] Internal process exited

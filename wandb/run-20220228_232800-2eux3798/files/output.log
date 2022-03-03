@@ -1,0 +1,53 @@
+
+config loaded.
+./save/ex1 exists, remove? (y/[n]):
+train dataset: size=15840
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+  deg_diff: shape=(2304, 1)
+val dataset: size=2605
+  sor_coord: shape=(2304, 2)
+  crop_sor: shape=(3, 48, 48)
+  tar_rgb: shape=(2304, 3)
+
+train:   0%|                                            | 0/990 [00:00<?, ?it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 281, in <module>
+    main(config, save_path)
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 203, in main
+    train_loss = train(train_loader, model, optimizer)
+  File "/home/skchen/ML_practice/reblur/train_liif.py", line 130, in train
+    for batch in tqdm(train_loader, leave=False, desc='train'):
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/tqdm/std.py", line 1180, in __iter__
+    for obj in iterable:
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 363, in __next__
+    data = self._next_data()
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 974, in _next_data
+    idx, data = self._get_data()
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 931, in _get_data
+    success, data = self._try_get_data()
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 779, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/queue.py", line 173, in get
+    self.not_empty.wait(remaining)
+  File "/home/skchen/anaconda3/envs/liif/lib/python3.6/threading.py", line 299, in wait
+    gotit = waiter.acquire(True, timeout)
+KeyboardInterrupt
